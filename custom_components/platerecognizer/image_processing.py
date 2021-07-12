@@ -4,6 +4,7 @@ import requests
 import voluptuous as vol
 import re
 import io
+import random
 from typing import List, Dict
 
 from PIL import Image, ImageDraw, UnidentifiedImageError
@@ -133,6 +134,7 @@ class PlateRecognizerEntity(ImageProcessingEntity):
         mmc,
     ):
         """Init."""
+        self._api_tokens = [t.strip() for t in api_token.split(",")]
         self._headers = {"Authorization": f"Token {api_token}"}
         self._regions = regions
         self._camera = camera_entity
@@ -167,6 +169,8 @@ class PlateRecognizerEntity(ImageProcessingEntity):
         self._orientations = []
         self._image = Image.open(io.BytesIO(bytearray(image)))
         self._image_width, self._image_height = self._image.size
+
+        self._headers = {"Authorization": f"Token {random.choice(self._api_tokens)}"}
         if self._regions == DEFAULT_REGIONS:
             regions = None
         else:
